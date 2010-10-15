@@ -863,7 +863,6 @@ processchar:
 	  debug1("append mode %d--\n", markdata->append_mode);
 	  LMsg(0, (markdata->append_mode) ? ":set append" : ":set noappend");
 	  break;
-	case 'v':
 	case 'V':
 	  /* this sets start column to column 9 for VI :set nu users */
 	  if (markdata->left_mar == 8)
@@ -982,6 +981,7 @@ processchar:
 	  if (od == '>')
 	    markdata->write_buffer = 1;
 	  /* FALLTHROUGH */
+	case 'v':
 	case ' ':
 	case '\r':
 	  if (!markdata->second)
