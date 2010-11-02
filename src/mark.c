@@ -839,9 +839,10 @@ processchar:
 	  revto(--rep_cnt, cy);
 	  break;
 	case 'w':
+	case 'W':
 	  if (rep_cnt == 0)
 	    rep_cnt = 1;
-	  nextword(&cx, &cy, NW_MUSTMOVE, rep_cnt);
+	  nextword(&cx, &cy, NW_MUSTMOVE| (od == 'W' ? NW_BIG : 0), rep_cnt);
 	  revto(cx, cy);
 	  break;
 	case 'e':
@@ -954,8 +955,8 @@ processchar:
 	  if (od == 'y')
 	    break;
 	  /* FALLTHROUGH */
-	case 'W':
-	  if (od == 'W')
+	case 'Z':
+	  if (od == 'Z')
 	    {
 	      if (rep_cnt == 0)
 		rep_cnt = 1;
