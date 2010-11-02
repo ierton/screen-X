@@ -529,6 +529,39 @@ MarkRoutine()
   flayer->l_y = W2D(y);
 }
 
+static FILE *xselp = 0;
+static char *xsel_buf = NULL;
+
+/*
+ * This fun should be called every time user changes selection.
+ * buf is currently selected text and len is it's length.
+ */
+static void 
+updatesel(buf,len) 
+char *buf;
+int len;
+{
+    /*
+     * xsel is an Xorg server selection buffer tool
+     *      -z  zeroflush mode (same as -f plus \0 in stream cancells selection)
+     *      -n  nodaemon mode 
+     *      -i  std input mode
+     */
+    const char* cmd_xsel = "xsel -i -z -n";
+
+    if(0 == len) return;
+
+    if(xselp==0) 
+        xselp = popen(cmd_xsel, "w");
+
+    if(xselp>0) 
+      {
+        /* Cancel old selection with \0 and pass new one */
+	fprintf(xselp, "%c%s", 0, buf);
+	fflush(xselp);
+      }
+}
+
 static void
 MarkProcess(inbufp,inlenp)
 char **inbufp;
@@ -1044,6 +1077,7 @@ processchar:
 		LMsg(0, "Copied %d characters into buffer", md_user->u_plop.len);
 	      if (write_buffer)
 		WriteFile(md_user, (char *)0, DUMP_EXCHANGE);
+	      updatesel(md_user->u_plop.buf, md_user->u_plop.len);
 	      in_mark = 0;
 	      break;
 	    }
@@ -1088,6 +1122,18 @@ processchar:
 	}
       if (in_mark)	/* markdata may be freed */
         markdata->rep_cnt = 0;
+      if (markdata->second == 1) 
+        {
+          int blen = rem(markdata->x1, markdata->y1, markdata->cx, markdata->cy, 2, 0, 0); /* count */
+          xsel_buf = realloc(xsel_buf, blen + 3);
+          if(xsel_buf != NULL)
+            {
+              blen = rem(markdata->x1, markdata->y1, markdata->cx, markdata->cy, 0, xsel_buf, 0);
+              xsel_buf[blen] = 0;
+              updatesel(xsel_buf, blen);
+            }
+          markdata->second = 1;	/* rem turns off second */
+        }
     }
   if (in_mark)
     {
