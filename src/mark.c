@@ -529,37 +529,51 @@ MarkRoutine()
   flayer->l_y = W2D(y);
 }
 
-static FILE *xselp = 0;
+static FILE *xselp = NULL;
 static char *xsel_buf = NULL;
 
 /*
  * This fun should be called every time user changes selection.
  * buf is currently selected text and len is it's length.
  */
-static void 
+static int 
 updatesel(buf,len) 
 char *buf;
 int len;
 {
-    /*
-     * xsel is an Xorg server selection buffer tool
-     *      -z  zeroflush mode (same as -f plus \0 in stream cancells selection)
-     *      -n  nodaemon mode 
-     *      -i  std input mode
-     */
-    const char* cmd_xsel = "xsel -i -z -n";
+  /*
+   * xsel is an Xorg server selection buffer tool
+   *      -z  zeroflush mode (same as -f plus \0 in stream cancells selection)
+   *      -n  nodaemon mode 
+   *      -i  std input mode
+   */
+  const char* cmd_xsel = "xsel -i -z -n";
+  int tries;
 
-    if(0 == len) return;
+  if(0 == len) return 0;
 
-    if(xselp==0) 
+  for(tries=0; tries<2; tries++)
+    {
+      int res;
+
+      if(xselp==NULL) 
         xselp = popen(cmd_xsel, "w");
 
-    if(xselp>0) 
-      {
-        /* Cancel old selection with \0 and pass new one */
-	fprintf(xselp, "%c%s", 0, buf);
-	fflush(xselp);
-      }
+      if(xselp==NULL) 
+        return -1;
+
+      /* Cancel old selection with \0 and pass new one */
+      fprintf(xselp, "%c%s", 0, buf);
+
+      res = fflush(xselp);
+      if (res == 0) 
+        return 0; /* success */
+
+      pclose(xselp);
+      xselp = NULL;
+    }
+
+  return -1;
 }
 
 static void
