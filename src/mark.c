@@ -538,7 +538,7 @@ static char *xsel_buf = NULL;
  */
 static int 
 updatesel(buf,len) 
-char *buf;
+const char *buf;
 int len;
 {
   /*
@@ -1092,6 +1092,7 @@ processchar:
 		LMsg(0, "Copied %d characters into buffer", md_user->u_plop.len);
 	      if (write_buffer)
 		WriteFile(md_user, (char *)0, DUMP_EXCHANGE);
+              md_user->u_plop.buf[md_user->u_plop.len] = 0;
 	      updatesel(md_user->u_plop.buf, md_user->u_plop.len);
 	      in_mark = 0;
 	      break;
