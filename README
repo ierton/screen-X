@@ -1,0 +1,30 @@
+Hello.
+This GNU screen version has X-server 'clipboard' integration via xsel interface.
+
+
+INSTALL
+=======
+
+Tio make it work one have to:
+
+
+1. Install xsel from my repo (the one with --zeroflush option)
+2. Install GNU screen from this repo.
+
+Now you can use screen's visual mode to select some text and than paste it in your browser.
+
+BUGS
+====
+
+Sorry, but there are some bugs (screen code is tricky for me to work with)
+
+- Sometimes screen selects additional garbage text 
+- Sometimes screen hangs
+- Screen will definetly hang when you sleect large text block (more than one
+  screen of text)
+
+
+Anyway, thank you for your interest and happy hacking!
+
+Sergey
+ierton@gmail.com
