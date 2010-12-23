@@ -1,6 +1,6 @@
 Hello.
 This GNU screen version has X-server 'clipboard' integration via xsel interface.
-
+Also there are some vim-friendly keybindings added.
 
 INSTALL
 =======
@@ -13,6 +13,13 @@ Tio make it work one have to:
 
 Now you can use screen's visual mode to select some text and than paste it in your browser.
 
+HOW DOES IT WORK
+==================
+
+No, I didn't add any X-protocol code into screen. I just added popen() call wich
+starts xsel in daemon mode to handle user selections. See commit history for
+details.
+
 BUGS
 ====
 
@@ -20,7 +27,7 @@ Sorry, but there are some bugs (screen code is tricky for me to work with)
 
 - Sometimes screen selects additional garbage text 
 - Sometimes screen hangs
-- Screen will definetly hang when you sleect large text block (more than one
+- Screen will definetly hang if you sleect large text block (more than 1.5
   screen of text)
 
 
